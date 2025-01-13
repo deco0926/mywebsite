@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" href="style.css">
+    <style>
+      .footer-form {
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .footer-form h5 {
+        margin-bottom: 20px;
+      }
+      .footer-form .input-field {
+        margin-bottom: 15px;
+      }
+      .footer-form button {
+        margin-top: 10px;
+      }
+	  .voter {
+    	margin-bottom: 15px; /* 設定 15px 的底部間距 */
+	}
+    </style>
+  </head>
+  <body>
+    <div id="header"></div>
+    <script src="header.js"></script>
+    <div class="container">
+      <h3>歡迎來到寶可夢人氣投票</h3>
+      <p>為您最喜愛的寶可夢投下神聖的一票吧!</p>
+    </div>
+	<div class="voter">
+		<div class="container">
+			<div class="footer-form">
+			<form id="trainerForm" method="POST" action="https://docs.google.com/forms/d/e/1FAIpQLScyUj32iTFLK6paCbPpMSz5THMYZha0_gzUGCTQUeqJPA7cow/formResponse" target="_blank">
+				<!-- 訓練家稱呼 -->
+				<div class="input-field">
+				<input id="trainer_name" name="entry.2046131508" type="text" required>
+				<label for="trainer_name">訓練家稱呼</label>
+				</div>
+
+				<!-- 最喜歡的寶可夢 -->
+				<div class="input-field">
+				<select id="favorite_pokemon" name="entry.2116557282" required>
+					<option value="" disabled selected>選擇您的最愛</option>
+					<option value="皮卡丘">皮卡丘</option>
+					<option value="小火龍">小火龍</option>
+					<option value="小鋸鱷">小鋸鱷</option>
+				</select>
+				<label for="favorite_pokemon">最喜歡的寶可夢</label>
+				</div>
+
+				<!-- 提交按鈕 -->
+				<button class="btn waves-effect waves-light" type="submit">
+				提交 <i class="material-icons right">send</i>
+				</button>
+			</form>
+			</div>
+		</div>
+	</div>
+	<div id="footer"></div>
+	<script src="footer.js"></script>
+    <script>
+      // 初始化下拉選單（MaterializeCSS 提供）
+      document.addEventListener('DOMContentLoaded', function () {
+        const elems = document.querySelectorAll('select');
+        M.FormSelect.init(elems);
+      });
+
+      // 攔截表單提交，跳出新分頁後刷新當前頁面
+      document.getElementById('trainerForm').onsubmit = function () {
+        alert('感謝您的提交！'); // 提交提示
+        setTimeout(() => {
+          location.reload(); // 提交後延遲刷新原頁面
+        }, 1000); // 1 秒延遲，確保新分頁已開啟
+      };
+    </script>
+  </body>
+</html>
