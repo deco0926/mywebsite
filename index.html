@@ -30,7 +30,7 @@
         const data = response.getDataTable();
         let htmlContent = '';
 
-        for (let i = 0; i < data.getNumberOfRows(); i++) {
+        for (let i = 1; i < data.getNumberOfRows(); i++) {
           const name = data.getValue(i, 0);
           const englishName = data.getValue(i, 1);
           const imageUrl = data.getValue(i, 2);
