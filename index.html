@@ -7,10 +7,21 @@
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
+      .card-image {
+        width: 120px; /* 容器寬度 */
+        height: 120px; /* 容器高度 */
+        margin: 0 auto; /* 使圖片居中 */
+        overflow: hidden; /* 隱藏超出的部分 */
+      }
+
       .card-image img {
-        width: 150px;
-        height: 150px;
-        object-fit: contain; /* 保持圖片比例並填滿容器 */
+        width: 100%; /* 圖片寬度佔滿容器 */
+        height: 100%; /* 圖片高度佔滿容器 */
+        object-fit: contain; /* 保持比例，並填滿容器 */
+      }
+
+      .card {
+        text-align: center; /* 讓文字和圖片居中對齊 */
       }
     </style>
     <script>
