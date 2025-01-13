@@ -7,22 +7,34 @@
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
+      /* 卡片樣式 */
       .card-image {
-        width: 75px; /* 增大容器寬度 */
-        height: 75px; /* 增大容器高度 */
-        margin: 10px auto; /* 加小的內邊距，並居中 */
-        overflow: hidden; /* 隱藏超出的部分 */
+        width: 75px; 
+        height: 75px;
+        margin: 10px auto;
+        overflow: hidden;
       }
-
       .card-image img {
-        width: 100%; /* 圖片寬度佔滿容器 */
-        height: 100%; /* 圖片高度佔滿容器 */
-        object-fit: contain; /* 保持比例，並填滿容器 */
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .card {
+        text-align: center;
+        padding: 10px;
       }
 
-      .card {
-        text-align: center; /* 讓文字與卡片內容居中對齊 */
-        padding: 10px; /* 減少文字與圖片之間的空白 */
+      /* 導航列置中 */
+      .nav-wrapper .brand-logo {
+        text-align: center;
+        width: 100%;
+        position: absolute;
+        left: 0;
+      }
+
+      /* 頁尾置中 */
+      .page-footer .container {
+        text-align: center;
       }
     </style>
     <script>
@@ -90,11 +102,7 @@
 
     <footer class="page-footer indigo darken-3">
       <div class="container">
-        <div class="footer-copyright">
-          <div class="container">
-            © 2021 Copyright Text
-          </div>
-        </div>
+        © 2021 Copyright Text
       </div>
     </footer>
   </body>
