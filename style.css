@@ -1,26 +1,29 @@
 .card-image {
-        width: 75px; 
-        height: 75px;
-        margin: 10px auto;
-        overflow: hidden;
-      }
+    width: 75px; 
+    height: 75px;
+    margin: 10px auto;
+    overflow: hidden;
+  }
 .card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 .card {
-        text-align: center;
-        padding: 10px;
+    text-align: center;
+    padding: 10px;
 }
 /* 導航列置中 */
 .nav-wrapper .brand-logo {
-        text-align: center;
-        width: 100%;
-        position: absolute;
-        left: 0;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    left: 0;
 }
 /* 頁尾置中 */
 .page-footer .container {
-        text-align: center;
+    text-align: center;
+}
+footer {
+    padding: 20px 0;
 }
