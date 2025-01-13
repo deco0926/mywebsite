@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
       .card-image {
-        width: 120px; /* 容器寬度 */
-        height: 120px; /* 容器高度 */
-        margin: 0 auto; /* 使圖片居中 */
+        width: 200px; /* 增大容器寬度 */
+        height: 200px; /* 增大容器高度 */
+        margin: 10px auto; /* 加小的內邊距，並居中 */
         overflow: hidden; /* 隱藏超出的部分 */
       }
 
@@ -21,7 +21,8 @@
       }
 
       .card {
-        text-align: center; /* 讓文字和圖片居中對齊 */
+        text-align: center; /* 讓文字與卡片內容居中對齊 */
+        padding: 10px; /* 減少文字與圖片之間的空白 */
       }
     </style>
     <script>
@@ -55,7 +56,7 @@
           const infoLink = data.getValue(i, 3);
 
           htmlContent += `
-            <div class="col s12 m5 l2">
+            <div class="col s12 m6 l3">
               <div class="card">
                 <div class="card-image">
                   <img src="${imageUrl}" alt="${name}">
