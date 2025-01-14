@@ -7,9 +7,22 @@
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="style.css">
+    <style>
+      .filter-buttons {
+        display: flex;
+        justify-content: flex-start; /* 靠左排列 */
+        gap: 20px; /* 增加按鈕之間的間距 */
+        margin: 20px 0; /* 上下留出間距 */
+      }
+      .filter-buttons .btn {
+        min-width: 120px; /* 增加按鈕的最小寬度 */
+      }
+    </style>
     <script>
       google.charts.load('current', {'packages': ['corechart']});
       google.charts.setOnLoadCallback(init);
+
+      let allData = []; // 存儲所有卡片的數據
 
       function init() {
         const sheetId = '1P9RLUf9_BBASg23jBvmjzAgFiObLNYE6_dGvhBvpEoM';
@@ -29,26 +42,41 @@
         }
 
         const data = response.getDataTable();
-        let htmlContent = '';
+        allData = []; // 清空之前的數據
 
         for (let i = 1; i < data.getNumberOfRows(); i++) {
-          const name = data.getValue(i, 0);
-          const location = data.getValue(i, 1);
-          const imageUrl = data.getValue(i, 2);
+          allData.push({
+            id: i, // 編號從 1 開始
+            name: data.getValue(i, 0),
+            location: data.getValue(i, 1),
+            imageUrl: data.getValue(i, 2),
+          });
+        }
 
-          htmlContent += `
-            <div class="col s12 m6 l3">
-              <div class="card">
-                <div class="card-image">
-                  <img src="${imageUrl}" alt="${name}">
-                </div>
-                <div class="card-content">
-                  <span class="card-title">${name}</span>
+        renderCards('所有地區');
+      }
+
+      function renderCards(filter) {
+        let htmlContent = '';
+        allData.forEach(item => {
+          if (filter === '所有地區' || item.location === filter) {
+            htmlContent += `
+              <div class="col s12 m6 l2">
+                <div class="card">
+                  <div class="card-image">
+                    <img src="${item.imageUrl}" alt="${item.name}">
+                  </div>
+                  <div class="card-content">
+                    <span class="card-title">${item.name}</span>
+                  </div>
+                  <div class="card-action">
+                    <a class="btn indigo darken-3" href="map.html?id=${item.id}" target="_blank">導航</a>
+                  </div>
                 </div>
               </div>
-            </div>
-          `;
-        }
+            `;
+          }
+        });
 
         document.getElementById('demo').innerHTML = htmlContent;
       }
@@ -58,6 +86,19 @@
     <div id="header"></div>
     <script src="header.js"></script>
 
+    <!-- 地區分類按鈕 -->
+    <div class="container filter-buttons">
+      <button class="btn indigo darken-3" onclick="renderCards('所有地區')">所有地區</button>
+      <button class="btn indigo darken-3" onclick="renderCards('東北')">東北</button>
+      <button class="btn indigo darken-3" onclick="renderCards('關東')">關東</button>
+      <button class="btn indigo darken-3" onclick="renderCards('中部')">中部</button>
+      <button class="btn indigo darken-3" onclick="renderCards('關西')">關西</button>
+      <button class="btn indigo darken-3" onclick="renderCards('四國')">四國</button>
+      <button class="btn indigo darken-3" onclick="renderCards('九州沖繩')">九州沖繩</button>
+      <button class="btn indigo darken-3" onclick="renderCards('其他')">其他</button>
+    </div>
+
+    <!-- 卡片區域 -->
     <div class="row" id="demo">
       <p>資料加載中，請稍候...</p>
     </div>
