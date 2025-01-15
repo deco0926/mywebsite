@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="style.css">
+    <title>寶可夢網站</title>
+    <link rel="icon" type="image/png" href="pokemon.png">
+    <style>
+      body {
+        background-color: #f5f5f5;
+      }
+      .card {
+        position: relative;
+        width: 200px;
+        height: 280px;
+        margin: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        border-radius: 8px;
+      }
+      .card-title {
+        font-weight: bold !important;
+      }
+      .card-image img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+      }
+      .card-content {
+        padding: 12px;
+        font-size: 16px;
+        text-align: center;
+      }
+      .champion-badge {
+        position: absolute;
+        top: -15px;
+        left: -15px;
+        width: 30px;
+        height: 45px;
+        z-index: 10;
+      }
+      .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 25px;
+      }
+      .info-section {
+        padding: 20px;
+        text-align: center;
+      }
+      .info-section h5 {
+        margin-bottom: 20px;
+      }
+    </style>
+    <script>
+      google.charts.load('current', {'packages': ['corechart']});
+      google.charts.setOnLoadCallback(init);
+
+      function init() {
+        const votesSheet = {
+          sheetId: '1RyKv_St06llBJI7N2G0CQAJH0_e1F1-bulX-V3K2ia0',
+          sheetName: '表單回應1',
+          query: 'SELECT C'
+        };
+
+        const imagesSheet = {
+          sheetId: '1P9RLUf9_BBASg23jBvmjzAgFiObLNYE6_dGvhBvpEoM',
+          sheetName: '初始',
+          query: 'SELECT A, C, F'
+        };
+
+        loadGoogleSheet(votesSheet, processVotesData);
+        loadGoogleSheet(imagesSheet, processImagesData);
+      }
+
+      let votes = {};
+      let images = {};
+
+      function loadGoogleSheet(sheet, callback) {
+        const url = `https://docs.google.com/spreadsheets/d/${sheet.sheetId}/gviz/tq?sheet=${sheet.sheetName}`;
+        const query = new google.visualization.Query(url);
+        query.setQuery(sheet.query);
+        query.send(callback);
+      }
+
+      function processVotesData(response) {
+        if (response.isError()) {
+          console.error('Error fetching votes data: ' + response.getMessage());
+          document.getElementById('demo').innerHTML = '<p>人氣投票資料載入失敗，請稍後再試。</p>';
+          return;
+        }
+
+        const data = response.getDataTable();
+        for (let i = 0; i < data.getNumberOfRows(); i++) {
+          const pokemon = data.getValue(i, 0);
+          votes[pokemon] = (votes[pokemon] || 0) + 1;
+        }
+
+        renderTopPokemons();
+      }
+
+      function processImagesData(response) {
+        if (response.isError()) {
+          console.error('Error fetching images data: ' + response.getMessage());
+          document.getElementById('demo').innerHTML = '<p>圖片資料載入失敗，請稍後再試。</p>';
+          return;
+        }
+
+        const data = response.getDataTable();
+        for (let i = 0; i < data.getNumberOfRows(); i++) {
+          const name = data.getValue(i, 0);
+          const image1 = data.getValue(i, 1);
+          const image2 = data.getValue(i, 2);
+          images[name] = [image1, image2];
+        }
+
+        renderTopPokemons();
+      }
+
+      function renderTopPokemons() {
+        if (Object.keys(votes).length === 0 || Object.keys(images).length === 0) {
+          return;
+        }
+
+        const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+        const topPokemons = sortedVotes.slice(0, 3);
+
+        let htmlContent = '';
+        topPokemons.forEach(([pokemon, voteCount], index) => {
+          const [image1, image2] = images[pokemon] || ['https://via.placeholder.com/150', 'https://via.placeholder.com/150'];
+          const badgeSrc = index === 0 ? '冠軍.png' : index === 1 ? '亞軍.png' : '季軍.png';
+          const uniqueId = `pokemon-${pokemon.replace(/\s+/g, '-')}`;
+
+          htmlContent += `
+            <div class="card">
+              <img class="champion-badge" src="${badgeSrc}" alt="排名獎牌">
+              <div class="card-image">
+                <img id="${uniqueId}" class="animate__animated" src="${image1}" alt="${pokemon}">
+              </div>
+              <div class="card-content">
+                <span class="card-title">${pokemon}</span>
+                <p>票數：${voteCount}</p>
+                <p>排名：${index + 1}</p>
+              </div>
+            </div>
+          `;
+
+          setInterval(() => {
+            const imgElement = document.getElementById(uniqueId);
+            if (imgElement) {
+              imgElement.classList.remove('animate__flipInX');
+              void imgElement.offsetWidth; // Trigger reflow
+              imgElement.src = imgElement.src === image1 ? image2 : image1;
+              imgElement.classList.add('animate__flipInX');
+            }
+          }, 5000);
+        });
+
+        document.getElementById('demo').innerHTML = `<div class="cards-container">${htmlContent}</div>`;
+      }
+    </script>
+  </head>
+  <body>
+    <div id="header"></div>
+    <script src="header.js"></script>
+
+    <div class="info-section">
+      <h5>寶可夢世界的冒險</h5>
+      <p>歡迎來到寶可夢網站！這裡您可以看到最受歡迎的寶可夢，也可以參與投票，幫助您的最愛登上冠軍寶座！</p>
+    </div>
+
+    <div id="demo">
+      <p>資料加載中，請稍候...</p>
+    </div>
+
+    <div id="footer"></div>
+    <script src="footer.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const elems = document.querySelectorAll('.sidenav');
+        M.Sidenav.init(elems);
+      });
+    </script>
+  </body>
+</html>

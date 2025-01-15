@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="style.css">
+    <title>寶可夢網站</title>
+    <link rel="icon" type="image/png" href="pokemon.png">
+    <style>
+      .detail-container {
+        display: flex;
+        align-items: flex-start;
+        margin: 20px;
+      }
+      .detail-image {
+        max-width: 300px;
+        margin-right: 20px;
+      }
+      .detail-content {
+        max-width: 600px;
+      }
+      .detail-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .detail-description {
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-family: Arial, sans-serif;
+        white-space: pre-wrap;
+      }
+      .detail-link a {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #1565c0;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+      .detail-link a:hover {
+        background-color: #003c8f;
+      }
+      .hidden {
+        display: none;
+      }
+      .show-more-link {
+        text-align: center;
+        margin: 20px;
+      }
+      .show-more-link button {
+        background-color: #1565c0;
+        color: #ffffff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .show-more-link button:hover {
+        background-color: #003c8f;
+      }
+      .card-title {
+        font-weight:bolder !important;
+      }
+    </style>
+    <script>
+      google.charts.load('current', {'packages': ['corechart']});
+      google.charts.setOnLoadCallback(init);
+
+      function init() {
+        const sheetId = '1P9RLUf9_BBASg23jBvmjzAgFiObLNYE6_dGvhBvpEoM';
+        const sheetName = '初始'; 
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${sheetName}`;
+        
+        const query = new google.visualization.Query(url);
+        query.setQuery('SELECT A, B, C, D, E');
+        query.send(processSheetsData);
+      }
+
+      function processSheetsData(response) {
+        if (response.isError()) {
+          console.error('Error fetching data: ' + response.getMessage());
+          document.getElementById('demo').innerHTML = '<p>資料載入失敗，請稍後再試。</p>';
+          return;
+        }
+
+        const data = response.getDataTable();
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        if (id) {
+          showPokemonDetails(data, id);
+        } else {
+          showAllPokemon(data);
+        }
+      }
+
+      function showAllPokemon(data) {
+        let htmlContent = '';
+        const totalRows = data.getNumberOfRows();
+
+        for (let i = 1; i < totalRows; i++) {
+          const name = data.getValue(i, 0);
+          const englishName = data.getValue(i, 1);
+          const imageUrl = data.getValue(i, 2);
+          const infoLink = `introduce.html?id=${i + 1}`;
+ 
+          const hiddenClass = i >= 7 ? 'hidden' : '';
+
+          htmlContent += `
+            <div class="col s12 m6 l2 card-container ${hiddenClass}">
+              <div class="card">
+                <div class="card-image">
+                  <img src="${imageUrl}" alt="${name}">
+                </div>
+                <div class="card-content">
+                  <span class="card-title">${name}</span>
+                  <p>${englishName}</p>
+                </div>
+                <div class="card-action">
+                  <a class="btn indigo darken-3" href="${infoLink}">介紹</a>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        if (totalRows > 5) {
+          htmlContent += `
+            <div class="col s12 show-more-link" id="showMoreLink">
+              <button>查看更多寶可夢...</button>
+            </div>
+          `;
+        }
+
+        document.getElementById('demo').innerHTML = htmlContent;
+
+        const showMoreLink = document.getElementById('showMoreLink');
+        if (showMoreLink) {
+          showMoreLink.addEventListener('click', function () {
+            document.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+            showMoreLink.style.display = 'none';
+          });
+        }
+      }
+
+      function showPokemonDetails(data, id) {
+        const index = parseInt(id, 10) - 1;
+        if (index < 0 || index >= data.getNumberOfRows()) {
+          document.getElementById('demo').innerHTML = '<p>無效的寶可夢 ID。</p>';
+          return;
+        }
+
+        const name = data.getValue(index, 0);
+        const englishName = data.getValue(index, 1);
+        const imageUrl = data.getValue(index, 2);
+        const description = data.getValue(index, 4);
+        const externalLink = data.getValue(index, 3);
+
+        const htmlContent = `
+          <div class="detail-container">
+            <img class="detail-image" src="${imageUrl}" alt="${name}">
+            <div class="detail-content">
+              <div class="detail-title">${name}</div>
+              <div class="detail-description" id="description"></div>
+              <div class="detail-link">
+                <a href="${externalLink}" target="_blank">外部連結</a>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('demo').innerHTML = htmlContent;
+
+        // 加入逐字顯示效果
+        const container = document.getElementById('description');
+        let charIndex = 0;
+        function typeEffect() {
+          if (charIndex < description.length) {
+            container.textContent += description[charIndex];
+            charIndex++;
+            setTimeout(typeEffect, 40); 
+          }
+        }
+        typeEffect();
+      }
+    </script>
+  </head>
+  <body>
+    <div id="header"></div>
+    <script src="header.js"></script>
+
+    <div class="row" id="demo">
+      <p>資料加載中，請稍候...</p>
+    </div>
+
+    <div id="footer"></div>
+    <script src="footer.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const elems = document.querySelectorAll('.sidenav');
+        M.Sidenav.init(elems);
+      });
+    </script>
+  </body>
+</html>

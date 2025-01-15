@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>寶可夢網站</title>
+    <link rel="icon" type="image/png" href="pokemon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      #map {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+      google.charts.load('current', {'packages': ['corechart']});
+      google.charts.setOnLoadCallback(init);
+
+      function init() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id'); // 取得 URL 傳入的 ID
+        if (!id) {
+          document.getElementById('map').innerHTML = '<p>無效的 ID，無法顯示地圖。</p>';
+          return;
+        }
+
+        const sheetId = '1P9RLUf9_BBASg23jBvmjzAgFiObLNYE6_dGvhBvpEoM';
+        const sheetName = '寶可夢中心'; 
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${sheetName}`;
+
+        const query = new google.visualization.Query(url);
+        query.setQuery(`SELECT D`); // 查詢 D 欄位所有行
+        query.send(response => processSheetsData(response, id));
+      }
+
+      function processSheetsData(response, id) {
+        if (response.isError()) {
+          console.error('Error fetching data: ' + response.getMessage());
+          document.getElementById('map').innerHTML = '<p>地圖載入失敗，請稍後再試。</p>';
+          return;
+        }
+
+        const data = response.getDataTable();
+        const rowIndex = parseInt(id); // 將 id 轉換為數字並計算索引
+        const embedCode = data.getValue(rowIndex, 0); // 取得 D 欄位的嵌入碼
+        if (!embedCode)  {
+          document.getElementById('map').innerHTML = '<p>無對應的地圖資料。</p>';
+          return;
+        }
+        document.getElementById('map').innerHTML = `
+          <iframe
+            src="${embedCode}"
+            width="100%"
+            height="100%"
+            style="border:0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        `;
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map">
+      <p>地圖載入中...</p>
+    </div>
+  </body>
+</html>

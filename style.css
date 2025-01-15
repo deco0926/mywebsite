@@ -1,0 +1,18 @@
+.card {
+    text-align: center;
+    padding: 10px;
+}
+/* 導航列置中 */
+.nav-wrapper .brand-logo {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    left: 0;
+}
+/* 頁尾置中 */
+.page-footer .container {
+    text-align: center;
+}
+footer {
+    padding: 20px 0;
+}
